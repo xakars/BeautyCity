@@ -99,7 +99,7 @@
 		<div class="container">
 			<div class="service">
 				<div class="breadCrumbs">
-					<a href="#" class="breadCrumbs__item">На главную</a>
+					<a href="{% url 'beauty:start_page' %}" class="breadCrumbs__item">На главную</a>
 				</div>
 				<div class="service__block">
 					<h1 class="service__title">Запись на услугу</h1>
@@ -258,7 +258,7 @@
 					<div class="row">
 						<div class="col-md-12">
 							<button  class="time__btns_next">Далее</button>
-							<button  class="time__btns_home">На главную</button>
+                            <button class="time__btns_home" onclick="redirectToMainPage()">На главную</button>
 						</div>
 					</div>
 				</div>
@@ -339,5 +339,10 @@
 	<script src="https://cdnjs.cloudflare.com/ajax/libs/slick-carousel/1.8.1/slick.min.js" integrity="sha512-XtmMtDEcNz2j7ekrtHvOVR4iwwaD6o/FUJe6+Zq+HgcCsk3kj4uSQQR8weQ2QVj1o0Pk6PwYLohm206ZzNfubg==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 	
 	<script src="../static/js/main.js"></script>
+    <script>
+    function redirectToMainPage() {
+        window.location.href = "{% url 'beauty:start_page' %}";
+    }
+    </script>
 </body>
 </html>
