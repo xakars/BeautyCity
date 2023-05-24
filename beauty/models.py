@@ -1,7 +1,6 @@
 from django.db import models
-from django.core.validators import RegexValidator
-from django.core.validators import MaxValueValidator, MinValueValidator
 from django.utils.translation import gettext_lazy as _
+from phonenumber_field.modelfields import PhoneNumberField
 
 
 class Salon(models.Model):
@@ -23,15 +22,10 @@ class Salon(models.Model):
 
 class Client(models.Model):
     fullname = models.CharField(verbose_name='Имя', max_length=255)
-    phone_regex = RegexValidator(
-        regex=r'^\+?1?\d{9,12}$',
-        message='Телефонный номер должен быть в формате: "+79999999999".\
-            Допускается до 12 цифр.'
-    )
-    phone = models.CharField(
-        validators=[phone_regex],
-        verbose_name='Телефон',
-        max_length=12
+    phone = PhoneNumberField(
+        'Номер клиента',
+        blank=True,
+        max_length=20,
     )
 
     class Meta:
@@ -44,15 +38,10 @@ class Client(models.Model):
 
 class Master(models.Model):
     fullname = models.CharField(verbose_name='Имя', max_length=30)
-    phone_regex = RegexValidator(
-        regex=r'^\+?1?\d{9,12}$',
-        message='Телефонный номер должен быть в формате: "+79999999999".\
-            Допускается до 12 цифр.'
-    )
-    phone = models.CharField(
-        validators=[phone_regex],
-        verbose_name='Телефон',
-        max_length=12
+    phone = PhoneNumberField(
+        'Номер клиента',
+        blank=True,
+        max_length=20,
     )
     speciality = models.CharField(verbose_name='Специальность', max_length=150)
     photo = models.ImageField(
