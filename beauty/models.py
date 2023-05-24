@@ -48,7 +48,7 @@ class Master(models.Model):
         regex=r'^\+?1?\d{9,12}$',
         message='Телефонный номер должен быть в формате: "+79999999999".\
             Допускается до 12 цифр.'
-        )
+    )
     phone = models.CharField(
         validators=[phone_regex],
         verbose_name='Телефон',
@@ -69,7 +69,7 @@ class Master(models.Model):
         blank=True,
         null=True
     )
-  
+
     class Meta:
         verbose_name = _('Мастер')
         verbose_name_plural = _('Мастера')
@@ -100,12 +100,38 @@ class Service(models.Model):
     
 
 class Order(models.Model):
-    client = models.ForeignKey(Client, on_delete=models.CASCADE, verbose_name="Клиент")
-    salon = models.ForeignKey(Salon, on_delete=models.CASCADE, verbose_name="Салон")
-    service = models.ForeignKey(Service, on_delete=models.CASCADE, verbose_name="Услуги")
-    master = models.ForeignKey(Master, on_delete=models.CASCADE, verbose_name="Мастер")
+    client = models.ForeignKey(
+        Client,
+        on_delete=models.CASCADE,
+        verbose_name='Клиент'
+    )
+    salon = models.ForeignKey(
+        Salon,
+        on_delete=models.CASCADE,
+        verbose_name='Салон'
+    )
+    service = models.ForeignKey(
+        Service,
+        on_delete=models.CASCADE,
+        verbose_name='Услуги'
+    )
+    master = models.ForeignKey(
+        Master,
+        on_delete=models.CASCADE,
+        verbose_name='Мастер'
+    )
     date = models.DateField(verbose_name='Дата записи')
-    time = models.TimeField(verbose_name='Время записи')
+    TIME_CHOICES = (
+        ('1', '9.00-10.00'),
+        ('2', '10.00-11.00'),
+        ('3', '11.00-12.00'),
+        ('4', '12.00-13.00'),
+        ('5', '14.00-15.00'),
+        ('6', '15.00-16.00'),
+        ('7', '16.00-17.00'),
+        ('8', '17.00-18.00'),
+    )
+    time = models.TimeField(choices=TIME_CHOICES, verbose_name='Время записи')
 
     class Meta:
         verbose_name = _('Заказ')
@@ -117,8 +143,21 @@ class Order(models.Model):
 
 class Review(models.Model):
     name = models.CharField(verbose_name='Имя', max_length=30)
-    master = models.ForeignKey(Master, on_delete=models.CASCADE, verbose_name="Мастер")
-    rate = models.PositiveSmallIntegerField(validators=[MinValueValidator(1), MaxValueValidator(5)])
+    master = models.ForeignKey(
+        Master,
+        on_delete=models.CASCADE,
+        verbose_name='Mастер'
+    )
+    RATE_CHOICES = (
+        ('1', '1'),
+        ('2', '2'),
+        ('3', '3'),
+        ('4', '4'),
+        ('5', '5'),
+    )
+    rate = models.PositiveSmallIntegerField(
+        verbose_name="Оцените от 1 до 5",
+        choices=RATE_CHOICES)
     review_text = models.TextField(verbose_name="Отзыв", max_length=500)
 
     class Meta:
