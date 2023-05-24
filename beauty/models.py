@@ -1,6 +1,7 @@
 from django.db import models
 from django.core.validators import RegexValidator
 from django.core.validators import MaxValueValidator, MinValueValidator
+from django.utils.translation import gettext_lazy as _
 
 
 class Salon(models.Model):
@@ -34,8 +35,8 @@ class Client(models.Model):
     )
 
     class Meta:
-        verbose_name = ('Клиент')
-        verbose_name_plural = ('Клиенты')
+        verbose_name = _('Клиент')
+        verbose_name_plural = _('Клиенты')
 
     def __str__(self):
         return self.fullname
@@ -49,8 +50,8 @@ class Master(models.Model):
             Допускается до 12 цифр.'
         )
     phone = models.CharField(
-        validators=[phone_regex]
-        verbose_name='Телефон'
+        validators=[phone_regex],
+        verbose_name='Телефон',
         max_length=12
     )
     speciality = models.CharField(verbose_name='Специальность', max_length=150)
@@ -59,15 +60,19 @@ class Master(models.Model):
         verbose_name='Фотография'
     )
     start_date = models.DateField(
-        'дата начала работы',
+        verbose_name='Дата начала работы',
         blank=True,
         null=True
     )
-    experience = models.DurationField(verbose_name='Стаж', blank=True, null=True)
+    experience = models.DurationField(
+        verbose_name='Стаж',
+        blank=True,
+        null=True
+    )
   
     class Meta:
         verbose_name = _('Мастер')
-        verbose_name_plural = _('Мастер')
+        verbose_name_plural = _('Мастера')
 
     def __str__(self):
         return self.fullname
@@ -76,8 +81,8 @@ class Master(models.Model):
 class Service(models.Model):
     name = models.CharField(verbose_name='Название услуги', max_length=200)
     price = models.PositiveIntegerField(verbose_name='Цена услуги')
-    master = models.ManyToMany(
-    Master,
+    masters = models.ManyToManyField(
+        Master,
         related_name='services',
         verbose_name='Мастера'
     )
@@ -107,7 +112,7 @@ class Order(models.Model):
         verbose_name_plural = _('Заказы')
 
     def __str__(self):
-        return self.name
+        return str(self.id)
 
 
 class Review(models.Model):
