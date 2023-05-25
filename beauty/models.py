@@ -68,9 +68,10 @@ class Master(models.Model):
         return self.fullname
 
     def get_experience(self):
-        self.experience = datetime.now().date() - (self.start_date if self.start_date else datetime.now().date())
+        self.experience = datetime.now().date() - \
+            (self.start_date if self.start_date else datetime.now().date())
         return self.experience
-  
+
 
 class Service(models.Model):
     name = models.CharField(verbose_name='Название услуги', max_length=200)
@@ -84,14 +85,14 @@ class Service(models.Model):
         blank=True,
         verbose_name='Фотография'
     )
-  
+
     class Meta:
         verbose_name = _('Услуга')
         verbose_name_plural = _('Услуги')
 
     def __str__(self):
         return self.name
-    
+
 
 class Order(models.Model):
     client = models.ForeignKey(
