@@ -1,4 +1,5 @@
 from django.db import models
+from datetime import datetime
 from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
@@ -65,7 +66,11 @@ class Master(models.Model):
 
     def __str__(self):
         return self.fullname
-    
+
+    def get_experience(self):
+        self.experience = datetime.now().date() - (self.start_date if self.start_date else datetime.now().date())
+        return self.experience
+  
 
 class Service(models.Model):
     name = models.CharField(verbose_name='Название услуги', max_length=200)
