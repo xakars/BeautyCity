@@ -94,6 +94,35 @@ class Service(models.Model):
         return self.name
 
 
+class Schedule(models.Model):
+    STATUSES = [
+        ('1', 'Свободно'),
+        ('2', 'Занято')
+    ]
+    date = models.DateField('Дата записи')
+    time = models.TimeField('Время записи')
+    status = models.CharField(
+        'статус',
+        max_length=10,
+        choices=STATUSES,
+        default='available'
+    )
+    master = models.ForeignKey(
+        Master,
+        on_delete=models.CASCADE,
+        related_name='schedule',
+        verbose_name='мастер',
+        null=True
+    )
+
+    class Meta:
+        verbose_name = _('расписание')
+        verbose_name_plural = _('расписания')
+
+    def __str__(self):
+        return f'{self.date} {self.time} {self.master} {self.status}'
+
+
 class Order(models.Model):
     client = models.ForeignKey(
         Client,
@@ -115,18 +144,11 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Мастер'
     )
-    date = models.DateField(verbose_name='Дата записи')
-    TIME_CHOICES = (
-        ('1', '9.00-10.00'),
-        ('2', '10.00-11.00'),
-        ('3', '11.00-12.00'),
-        ('4', '12.00-13.00'),
-        ('5', '14.00-15.00'),
-        ('6', '15.00-16.00'),
-        ('7', '16.00-17.00'),
-        ('8', '17.00-18.00'),
+    datetime = models.ForeignKey(
+        Schedule,
+        on_delete=models.CASCADE,
+        verbose_name='Время записи'
     )
-    time = models.TimeField(choices=TIME_CHOICES, verbose_name='Время записи')
 
     class Meta:
         verbose_name = _('Заказ')
