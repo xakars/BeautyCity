@@ -34,3 +34,11 @@ def view_service(request):
             'schedules': schedules
         }
     )
+
+
+def service_finally(request):
+    # Логика для отображения страницы serviceFinally.html
+    return render(
+        request,
+        'serviceFinally.html',
+    )

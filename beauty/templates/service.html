@@ -185,7 +185,7 @@
 				<div class="time__btns">
 					<div class="row">
 						<div class="col-md-12">
-							<button  class="time__btns_next">Далее</button>
+							<button class="time__btns_next" onclick="redirectToServiceFinally()">Далее</button>
                             <button class="time__btns_home" onclick="redirectToMainPage()">На главную</button>
 						</div>
 					</div>
@@ -272,5 +272,10 @@
         window.location.href = "{% url 'beauty:start_page' %}";
     }
     </script>
+	<script>
+	function redirectToServiceFinally() {
+		window.location.href = "{% url 'beauty:service_finally' %}";
+	}
+	</script>
 </body>
 </html>
