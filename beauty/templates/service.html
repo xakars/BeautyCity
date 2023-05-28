@@ -116,29 +116,54 @@
 						  	{% endfor %}
 						</div>
 					</div>
-					<div class="service__form_block service__services">
-						<button class="accordion">(Выберите услугу)</button>
-						<div class="panel">
-							{% for service in services %}
-							<div class="accordion__block fic">
-								<div class="accordion__block_intro">{{ service.name }}</div>
-								<div class="accordion__block_address">{{ service.price }} ₽</div>
-							</div>
-							{% endfor %}
-						</div>
-					</div>
-					<div class="service__form_block service__masters">
-						<button class="accordion">(Выберите мастера)</button>
-						<div class="panel">
-							{% for master in masters %}
-							<div class="accordion__block fic">
-								<img src="/media/{{ master.photo }}" alt="master" class="masters__header_img">
-								<div class="accordion__block_intro">{{ master.fullname }}</div>
-								<div class="accordion__block_address">{{ master.speciality }}</div>
-							</div>
-							{% endfor %}
-						</div>
-					</div>
+                    <div class="service__form_block service__services">
+                        <button class="accordion">(Выберите услугу)</button>
+                        <div class="panel">
+                            <button class="accordion">Парикмахерские услуги</button>
+                            <div class="panel">
+                                <div class="accordion__block_items">
+                                    <div class="accordion__block_item fic">
+                                        <div class="accordion__block_item_intro">Окрашивание волос</div>
+                                        <div class="accordion__block_item_address">5 000 ₽</div>
+                                    </div>
+                                    <div class="accordion__block_item fic">
+                                        <div class="accordion__block_item_intro">Укладка волос</div>
+                                        <div class="accordion__block_item_address">1 500 ₽</div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+
+
+
+
+
+
+{#					<div class="service__form_block service__services">#}
+{#						<button class="accordion">(Выберите услугу)</button>#}
+{#						<div class="panel">#}
+{#							{% for service in services %}#}
+{#							<div class="accordion__block fic">#}
+{#								<div class="accordion__block_intro">{{ service.name }}</div>#}
+{#								<div class="accordion__block_address">{{ service.price }} ₽</div>#}
+{#							</div>#}
+{#							{% endfor %}#}
+{#						</div>#}
+{#					</div>#}
+{#					<div class="service__form_block service__masters">#}
+{#						<button class="accordion">(Выберите мастера)</button>#}
+{#						<div class="panel">#}
+{#							{% for master in masters %}#}
+{#							<div class="accordion__block fic">#}
+{#								<img src="/media/{{ master.photo }}" alt="master" class="masters__header_img">#}
+{#								<div class="accordion__block_intro">{{ master.fullname }}</div>#}
+{#								<div class="accordion__block_address">{{ master.speciality }}</div>#}
+{#							</div>#}
+{#							{% endfor %}#}
+{#						</div>#}
+{#					</div>#}
 				</form>
 			</div>
 		</div>

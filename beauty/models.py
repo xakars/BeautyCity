@@ -4,21 +4,18 @@ from django.utils.translation import gettext_lazy as _
 from phonenumber_field.modelfields import PhoneNumberField
 
 
-class Salon(models.Model):
-    name = models.CharField(verbose_name='Название салона', max_length=150)
-    address = models.CharField(verbose_name='Адрес', max_length=255)
-    time_work = models.CharField(verbose_name='Режим работы', max_length=100)
-    photo = models.ImageField(
-        blank=True,
-        verbose_name='Фотография'
+class Category(models.Model):
+    name = models.CharField(
+        'Категория',
+        max_length=25
     )
 
-    class Meta:
-        verbose_name = _('Салон красоты')
-        verbose_name_plural = _('Салоны красоты')
-
     def __str__(self):
-        return self.name
+        return f'{self.name}'
+
+    class Meta:
+        verbose_name = 'Категория'
+        verbose_name_plural = 'Категории'
 
 
 class Client(models.Model):
@@ -39,25 +36,19 @@ class Client(models.Model):
 
 class Master(models.Model):
     fullname = models.CharField(verbose_name='Имя', max_length=30)
-    phone = PhoneNumberField(
-        'Номер клиента',
+
+    speciality = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        default=None,
+        verbose_name='Специальность',
+        null=True,
         blank=True,
-        max_length=20,
     )
-    speciality = models.CharField(verbose_name='Специальность', max_length=150)
+
     photo = models.ImageField(
         blank=True,
         verbose_name='Фотография'
-    )
-    start_date = models.DateField(
-        verbose_name='Дата начала работы',
-        blank=True,
-        null=True
-    )
-    experience = models.DurationField(
-        verbose_name='Стаж',
-        blank=True,
-        null=True
     )
 
     class Meta:
@@ -67,23 +58,44 @@ class Master(models.Model):
     def __str__(self):
         return self.fullname
 
-    def get_experience(self):
-        self.experience = datetime.now().date() - \
-            (self.start_date if self.start_date else datetime.now().date())
-        return self.experience
+
+
+class Salon(models.Model):
+    name = models.CharField(verbose_name='Название салона', max_length=150)
+    address = models.CharField(verbose_name='Адрес', max_length=255)
+    photo = models.ImageField(
+        blank=True,
+        verbose_name='Фотография'
+    )
+    master = models.ManyToManyField(
+        'Master',
+        through='DayOfWork',
+        through_fields=('salons', 'master')
+    )
+
+    class Meta:
+        verbose_name = _('Салон красоты')
+        verbose_name_plural = _('Салоны красоты')
+
+    def __str__(self):
+        return self.name
 
 
 class Service(models.Model):
     name = models.CharField(verbose_name='Название услуги', max_length=200)
     price = models.PositiveIntegerField(verbose_name='Цена услуги')
-    masters = models.ManyToManyField(
-        Master,
-        related_name='services',
-        verbose_name='Мастера'
-    )
     photo = models.ImageField(
         blank=True,
         verbose_name='Фотография'
+    )
+    category = models.ForeignKey(
+        Category,
+        on_delete=models.CASCADE,
+        related_name='services',
+        default=None,
+        verbose_name='Категории',
+        null = True,
+        blank = True,
     )
 
     class Meta:
@@ -94,41 +106,88 @@ class Service(models.Model):
         return self.name
 
 
-class Schedule(models.Model):
-    STATUSES = [
-        ('1', 'Свободно'),
-        ('2', 'Занято')
+class DayOfWork(models.Model):
+    MONDAY = 'Mo'
+    TUESDAY = 'Tu'
+    WEDNESDAY = 'We'
+    THURSDAY = 'Td'
+    FRIDAY = 'Fr'
+    SATURDAY = 'Sa'
+    SUNDAY = 'Su'
+
+    DAYS_OF_WEEK = [
+        (MONDAY, 'Пн'),
+        (TUESDAY, 'Вт'),
+        (WEDNESDAY, 'Ср'),
+        (THURSDAY, 'Чт'),
+        (FRIDAY, 'Пт'),
+        (SATURDAY, 'Сб'),
+        (SUNDAY, 'Вс')
     ]
-    date = models.DateField('Дата записи')
-    time = models.TimeField('Время записи')
-    status = models.CharField(
-        'статус',
-        max_length=10,
-        choices=STATUSES,
-        default='available'
+
+    day_of_week = models.CharField(
+        max_length=20,
+        verbose_name='Рабочие дни',
+        choices=DAYS_OF_WEEK,
+        blank=True
     )
+
+    ready = models.BooleanField(
+        default=False
+    )
+
     master = models.ForeignKey(
         Master,
         on_delete=models.CASCADE,
-        related_name='schedule',
-        verbose_name='мастер',
-        null=True
+        related_name='day_of_works',
+        verbose_name='Мастер'
     )
 
-    class Meta:
-        verbose_name = _('расписание')
-        verbose_name_plural = _('расписания')
-
-    def __str__(self):
-        return f'{self.date} {self.time} {self.master} {self.status}'
+    salons = models.ForeignKey(
+        Salon,
+        on_delete=models.CASCADE,
+        related_name='day_of_works'
+    )
 
 
 class Order(models.Model):
+    MORNING_1 = '9:00'
+    MORNING_2 = '10:00'
+    MORNING_3 = '11:00'
+    AFTERNOON_1 = '12:00'
+    AFTERNOON_2 = '13:00'
+    AFTERNOON_3 = '14:00'
+    DAY_1 = '15:00'
+    DAY_2 = '16:00'
+    DAY_3 = '17:00'
+    EVENING_1 = '18:00'
+    EVENING_2 = '19:00'
+    EVENING_3 = '20:00'
+    day_times = {
+        MORNING_1, MORNING_2, MORNING_2, MORNING_3, AFTERNOON_1, AFTERNOON_2,
+        AFTERNOON_3, DAY_1, DAY_2, DAY_3, EVENING_1, EVENING_2, EVENING_3
+    }
+    WORK_HOURS = [
+        (MORNING_1, MORNING_1),
+        (MORNING_2, MORNING_2),
+        (MORNING_3, MORNING_3),
+        (AFTERNOON_1, AFTERNOON_1),
+        (AFTERNOON_2, AFTERNOON_2),
+        (AFTERNOON_3, AFTERNOON_3),
+        (DAY_1, DAY_1),
+        (DAY_2, DAY_2),
+        (DAY_3, DAY_3),
+        (EVENING_1, EVENING_1),
+        (EVENING_2, EVENING_2),
+        (EVENING_3, EVENING_3),
+    ]
+
     client = models.ForeignKey(
         Client,
         on_delete=models.CASCADE,
         verbose_name='Клиент'
     )
+
     salon = models.ForeignKey(
         Salon,
         on_delete=models.CASCADE,
@@ -144,10 +203,16 @@ class Order(models.Model):
         on_delete=models.CASCADE,
         verbose_name='Мастер'
     )
-    datetime = models.ForeignKey(
-        Schedule,
-        on_delete=models.CASCADE,
-        verbose_name='Время записи'
+    appointment_hour = models.CharField(
+        max_length=15,
+        verbose_name='Время записи',
+        choices=WORK_HOURS,
+        blank=True
+    )
+    client_name = models.CharField('имя клиента', max_length=100, null=True, blank=True)
+    date = models.DateField(
+        'Дата',
+        null=True
     )
 
     class Meta:

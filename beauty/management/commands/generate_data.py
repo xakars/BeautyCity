@@ -1,5 +1,5 @@
 from django.core.management.base import BaseCommand, CommandError
-from beauty.models import Salon, Master, Service
+from beauty.models import Salon, Master, Service, Category
 from django.conf import settings
 from django.core.files import File
 import random
@@ -18,7 +18,6 @@ class Command(BaseCommand):
             new_saloon, created = Salon.objects.get_or_create(
                 name=saloon['name'],
                 address=saloon['address'],
-                time_work=saloon['time_work']
             )
             if created:
                 local_file = open(f'{settings.BASE_DIR}/beauty/static/img/salons/{saloon["photo"]}', "rb")
@@ -35,13 +34,22 @@ class Command(BaseCommand):
 
         ]
 
+        categories = [{'name':'Парикмахерские услуги'}, {'name': 'Макияж'}]
+
+        for category in categories:
+            new_category, created = Category.objects.get_or_create(
+                name=category['name'],
+            )
+
+        categories = Category.objects.all()
         for master in masters:
             new_master, created = Master.objects.get_or_create(
                 fullname=master['fullname'],
-                speciality=master['speciality'],
-                phone=master['phone'],
-                start_date=master['start_date'],
             )
+            if categories:
+                random_category = random.choice(categories)
+                new_master.speciality = random_category
+            new_master.save()
             if created:
                 local_file = open(f'{settings.BASE_DIR}/beauty/static/img/masters/{master["photo"]}', "rb")
                 djangofile = File(local_file)
@@ -55,19 +63,20 @@ class Command(BaseCommand):
             {'name': 'Укладка волос', 'price': 1500, 'masters': '', 'photo': 'service3.svg'},
         ]
 
-        masters = list(Master.objects.all())
 
         for service in services:
             new_service, created = Service.objects.get_or_create(
                 name=service['name'],
                 price=service['price'],
             )
+
+            if categories:
+                random_category = random.choice(categories)
+                new_service.speciality = random_category
+            new_service.save()
+
             if created:
                 local_file = open(f'{settings.BASE_DIR}/beauty/static/img/services/{service["photo"]}', "rb")
                 djangofile = File(local_file)
                 new_service.photo.save(f'{service["photo"]}', djangofile)
                 local_file.close()
-
-            random_masters = random.sample(masters, random.randint(1, 2))
-            for master in random_masters:
-                new_service.masters.add(master)

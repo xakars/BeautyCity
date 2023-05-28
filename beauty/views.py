@@ -1,5 +1,5 @@
 from django.shortcuts import render
-from beauty.models import Service, Master, Salon, Review, Schedule
+from beauty.models import Service, Master, Salon, Review
 
 
 def view_index(request):
@@ -23,7 +23,6 @@ def view_service(request):
     services = Service.objects.all()
     salons = Salon.objects.all()
     masters = Master.objects.all()
-    schedules = Schedule.objects.all()
     return render(
         request,
         template_name="service.html",
@@ -31,7 +30,6 @@ def view_service(request):
             'salons': salons,
             'services': services,
             'masters': masters,
-            'schedules': schedules
         }
     )
 
